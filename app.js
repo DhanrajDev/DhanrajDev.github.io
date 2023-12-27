@@ -111,7 +111,8 @@ function stopwatch() {
 var started = false
 
 function startwatch() {
-    document.getElementById("start").src = "restart-button.png"
+    document.getElementById("start").innerHTML = "Restart"
+    document.getElementById("start").style.fontSize = "30px";
     if (started != true) {
         timer = setInterval(stopwatch, 1000);
         started = true;
