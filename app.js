@@ -32,22 +32,29 @@ let ser1 = unshuffled
     .map(({ value }) => value)
 
 function ser2(array) {
-  let currentIndex = array.length,  randomIndex;
+    let currentIndex = array.length, randomIndex;
 
-  // While there remain elements to shuffle.
-  while (currentIndex > 0) {
+    // While there remain elements to shuffle.
+    while (currentIndex > 0) {
 
-    // Pick a remaining element.
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex--;
+        // Pick a remaining element.
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex--;
 
-    // And swap it with the current element.
-    [array[currentIndex], array[randomIndex]] = [
-      array[randomIndex], array[currentIndex]];
-  }
+        // And swap it with the current element.
+        [array[currentIndex], array[randomIndex]] = [
+            array[randomIndex], array[currentIndex]];
+    }
 
-  return array;
-} 
+    return array;
+}
+
+function loadbest() {
+    const bestscore = localStorage.getItem('best_score');
+    document.getElementById('besttime').innerHTML = bestscore;
+}
+
+window.onload = loadbest();
 
 var shuf = ser2(ser1)
 let shuffled = shuf
@@ -57,7 +64,6 @@ let shuffled = shuf
 
 oldind = x
 var islagging = false
-var ended = false
 
 function change(newind) {
     if (started == true) {
@@ -100,11 +106,26 @@ function stopwatch() {
             seconds = 0
             mins++;
         }
-    }
-    if(seconds <= 9){
-        document.getElementById('timer').innerHTML = mins+":0"+seconds
     }else{
-        document.getElementById('timer').innerHTML = mins+":"+seconds
+        const timeString = document.getElementById('timer').innerHTML;
+        const [mins, sec] = timeString.split(':');
+        const bestScore = localStorage.getItem('best_score');
+        if(bestScore){
+            const [topmin, topsec] = bestScore.split(':');
+            if (parseInt(topmin) > parseInt(mins)) {
+                localStorage.setItem('best_score', `${mins}:${sec}`);
+            } else if (parseInt(topmin) == parseInt(mins) && parseInt(topsec) > parseInt(sec)) {
+                localStorage.setItem('best_score', `${mins}:${sec}`);
+            }
+        }else{
+            localStorage.setItem('best_score', `${mins}:${sec}`);
+            console.log('oldnewbest')
+        }
+    }
+    if (seconds <= 9) {
+        document.getElementById('timer').innerHTML = mins + ":0" + seconds
+    } else {
+        document.getElementById('timer').innerHTML = mins + ":" + seconds
     }
 }
 
@@ -113,10 +134,11 @@ var started = false
 function startwatch() {
     document.getElementById("start").innerHTML = "Restart"
     document.getElementById("start").style.fontSize = "30px";
+
     if (started != true) {
         timer = setInterval(stopwatch, 1000);
         started = true;
-    } else if (started == true) {
+    } else if (started == true) {        
         location.reload()
     }
 }
